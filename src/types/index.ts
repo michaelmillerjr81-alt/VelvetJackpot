@@ -6,7 +6,7 @@ export interface PlayerBalance {
 }
 
 export interface SpinResult {
-  grid: string[][];        // 5 reels × 3 rows
+  grid: string[][];
   winLines: WinLine[];
   totalWin: number;
   currency: CurrencyMode;
@@ -24,7 +24,6 @@ export interface WinLine {
 }
 
 export type JackpotTier = 'MINI' | 'MAJOR' | 'GRAND';
-
 export type WinTier = 'SMALL' | 'MEDIUM' | 'BIG' | 'MEGA' | 'JACKPOT';
 
 export interface GameConfig {
@@ -47,3 +46,47 @@ export interface SymbolConfig {
 }
 
 export type GameMode = 'BASE' | 'FREE_SPINS' | 'BONUS';
+
+// ── Theme System ───────────────────────────────────────────────────────────
+
+export interface SymbolStyleConfig {
+  bg: number;
+  text: number;
+  label: string;
+}
+
+export interface ThemePalette {
+  bgDark: number;
+  bgMid: number;
+  bgGlow: number;
+  accentPrimary: number;
+  accentSecondary: number;
+  ctrlBar: number;
+  frameStroke: number;
+  frameInner: number;
+  textPrimary: number;
+  textDim: number;
+}
+
+export interface FrameStyleConfig {
+  strokeColor: number;
+  strokeWidth: number;
+  strokeAlpha: number;
+  fillColor: number;
+  fillAlpha: number;
+  innerFill: number;
+  cornerRadius: number;
+}
+
+export interface ThemeDefinition {
+  id: string;
+  displayName: string;
+  tagline: string;
+  palette: ThemePalette;
+  symbols: SymbolConfig[];
+  symbolStyles: Record<string, SymbolStyleConfig>;
+  paytable: Record<string, number[]>;
+  frameStyle: FrameStyleConfig;
+  logoFontFamily: string;
+  soundPrefix: string;
+}

@@ -208,5 +208,5 @@ app.post('/api/spin', (req, res) => {
 
 // ── Start ──────────────────────────────────────────────────────────────────
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
 app.listen(PORT, () => console.log(`[VelvetJackpot] Backend running on http://localhost:${PORT}`));

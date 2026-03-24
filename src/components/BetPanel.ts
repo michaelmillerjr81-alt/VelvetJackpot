@@ -8,35 +8,38 @@ export class BetPanel {
   readonly container = new Container();
   private betLabel!: Text;
   private betIndex = GAME_CONFIG.betLevels.indexOf(GAME_CONFIG.defaultBet);
+  private accentColor: number;
+  private bgColor: number;
 
-  constructor() {
+  constructor(accentColor: number = 0xf5c842, bgColor: number = 0x0d0010) {
+    this.accentColor = accentColor;
+    this.bgColor = bgColor;
     this.build();
   }
 
   private build(): void {
-    const btnStyle = new TextStyle({ fontFamily: 'sans-serif', fontSize: 28, fill: 0xf5c842, fontWeight: 'bold' });
-    const labelStyle = new TextStyle({ fontFamily: 'monospace', fontSize: 22, fill: 0xffffff });
-    const captionStyle = new TextStyle({ fontFamily: 'sans-serif', fontSize: 14, fill: 0x888888 });
+    const btnStyle  = new TextStyle({ fontFamily: 'sans-serif', fontSize: 30, fill: this.accentColor, fontWeight: 'bold' });
+    const valStyle  = new TextStyle({ fontFamily: 'monospace',  fontSize: 24, fill: 0xffffff });
+    const capStyle  = new TextStyle({ fontFamily: 'sans-serif', fontSize: 13, fill: 0x666666 });
 
-    const caption = new Text({ text: 'PLAY AMOUNT', style: captionStyle });
-    caption.anchor.set(0.5); caption.x = 80;
-    this.container.addChild(caption);
+    const cap = new Text({ text: 'PLAY AMOUNT', style: capStyle });
+    cap.anchor.set(0.5); cap.x = 0; cap.y = -28;
+    this.container.addChild(cap);
 
-    const minus = this.makeBtn('-', btnStyle, -60, () => this.changeBet(-1));
-    const plus  = this.makeBtn('+', btnStyle,  60, () => this.changeBet(+1));
-    this.container.addChild(minus);
-    this.container.addChild(plus);
+    const minus = this.makeBtn('−', btnStyle, -70, () => this.changeBet(-1));
+    const plus  = this.makeBtn('+', btnStyle,  70, () => this.changeBet(+1));
+    this.container.addChild(minus, plus);
 
-    this.betLabel = new Text({ text: this.formatBet(), style: labelStyle });
-    this.betLabel.anchor.set(0.5); this.betLabel.x = 0; this.betLabel.y = 18;
+    this.betLabel = new Text({ text: this.formatBet(), style: valStyle });
+    this.betLabel.anchor.set(0.5); this.betLabel.x = 0; this.betLabel.y = 10;
     this.container.addChild(this.betLabel);
   }
 
   private makeBtn(label: string, style: TextStyle, x: number, action: () => void): Container {
     const c = new Container();
-    c.x = x; c.y = 18;
-    const bg = new Graphics().circle(0, 0, 22).fill({ color: 0x2a1a30 });
-    const t = new Text({ text: label, style });
+    c.x = x; c.y = 10;
+    const bg = new Graphics().circle(0, 0, 24).fill({ color: this.bgColor }).circle(0, 0, 24).stroke({ color: this.accentColor, width: 1, alpha: 0.4 });
+    const t  = new Text({ text: label, style });
     t.anchor.set(0.5);
     c.addChild(bg, t);
     c.eventMode = 'static'; c.cursor = 'pointer';
