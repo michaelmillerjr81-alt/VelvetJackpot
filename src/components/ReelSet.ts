@@ -13,7 +13,7 @@ export class ReelSet {
     const offsetX = -totalW / 2 + spacing / 2;
 
     for (let i = 0; i < GAME_CONFIG.reelCount; i++) {
-      const reel = new Reel(i);
+      const reel = new Reel();
       reel.container.x = offsetX + i * spacing;
       this.container.addChild(reel.container);
       this.reels.push(reel);

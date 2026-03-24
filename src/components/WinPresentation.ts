@@ -13,27 +13,32 @@ function getWinTier(win: number, bet: number): WinTier {
   return 'SMALL';
 }
 
-const TIER_CONFIG: Record<WinTier, { label: string; color: number; duration: number; soundKey: string }> = {
-  SMALL:   { label: '',         color: 0xFFD700, duration: 1500, soundKey: 'win_small'  },
-  MEDIUM:  { label: '',         color: 0xFFD700, duration: 3000, soundKey: 'win_medium' },
-  BIG:     { label: 'BIG WIN!', color: 0xFFD700, duration: 5000, soundKey: 'win_big'    },
-  MEGA:    { label: 'MEGA WIN!',color: 0xFF00FF, duration: 8000, soundKey: 'win_mega'   },
-  JACKPOT: { label: 'JACKPOT!', color: 0xFFFFFF, duration: 12000,soundKey: 'win_jackpot'},
+const TIER_CONFIG: Record<WinTier, { label: string; color: number; holdMs: number; soundKey: string }> = {
+  SMALL:   { label: '',          color: 0xFFD700, holdMs: 1500,  soundKey: 'win_small'   },
+  MEDIUM:  { label: '',          color: 0xFFD700, holdMs: 3000,  soundKey: 'win_medium'  },
+  BIG:     { label: 'BIG WIN!',  color: 0xFFD700, holdMs: 5000,  soundKey: 'win_big'     },
+  MEGA:    { label: 'MEGA WIN!', color: 0xFF00FF, holdMs: 8000,  soundKey: 'win_mega'    },
+  JACKPOT: { label: 'JACKPOT!',  color: 0xFFFFFF, holdMs: 12000, soundKey: 'win_jackpot' },
 };
 
 export class WinPresentation {
   readonly container = new Container();
+  private W: number;
+  private H: number;
   private overlay!: Graphics;
   private banner!: Text;
   private counter!: Text;
 
-  constructor(private W: number, private H: number) {
+  constructor(W: number, H: number) {
+    this.W = W;
+    this.H = H;
     this.build();
   }
 
   private build(): void {
-    this.overlay = new Graphics().rect(0, 0, this.W, this.H).fill({ color: 0x000000, alpha: 0.65 });
+    this.overlay = new Graphics().rect(0, 0, this.W, this.H).fill({ color: 0x000000, alpha: 0.7 });
     this.overlay.alpha = 0;
+    this.overlay.eventMode = 'none';
     this.container.addChild(this.overlay);
 
     const bannerStyle = new TextStyle({
@@ -72,36 +77,33 @@ export class WinPresentation {
     audioManager.duck('music', 0.2, 400);
     audioManager.play(cfg.soundKey);
 
-    // Fade in overlay
     await gsap.to(this.overlay, { alpha: 1, duration: 0.3 }).then();
 
     if (cfg.label) {
       this.banner.text = cfg.label;
       this.banner.style.fill = cfg.color;
-      await gsap.fromTo(this.banner, { alpha: 0, scale: 0.5 }, { alpha: 1, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }).then();
+      await gsap.fromTo(
+        this.banner,
+        { alpha: 0, scale: 0.5 },
+        { alpha: 1, scale: 1, duration: 0.4, ease: 'back.out(1.7)' },
+      ).then();
     }
 
-    // Counter
     this.counter.alpha = 1;
     await new Promise<void>((resolve) => {
-      animateNumber(0, winAmount, cfg.duration * 0.7, (v) => {
+      animateNumber(0, winAmount, cfg.holdMs * 0.6, (v) => {
         this.counter.text = v.toLocaleString();
-        audioManager.play('counter_tick');
       }, () => {
         audioManager.play('counter_end');
         resolve();
       });
     });
 
-    // Hold then dismiss
-    await gsap.to({}, { duration: cfg.duration * 0.001 }).then();
+    // Hold
+    await gsap.to({}, { duration: cfg.holdMs * 0.0004 }).then();
     await gsap.to([this.overlay, this.banner, this.counter], { alpha: 0, duration: 0.4 }).then();
 
-    // Restore music
     audioManager.duck('music', 0.4, 800);
-
-    this.banner.alpha = 0;
-    this.counter.alpha = 0;
     this.counter.text = '0';
   }
 }

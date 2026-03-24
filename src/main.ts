@@ -1,5 +1,4 @@
-import { Application, Assets } from 'pixi.js';
-import { ASSET_MANIFEST } from './config/assetManifest.ts';
+import { Application } from 'pixi.js';
 import { setupResponsiveScale } from './utils/scaling.ts';
 import { audioManager } from './audio/AudioManager.ts';
 import { LoadingScene } from './scenes/LoadingScene.ts';
@@ -19,8 +18,6 @@ async function main() {
   document.getElementById('app')!.appendChild(app.canvas);
 
   setupResponsiveScale(app);
-
-  await Assets.init({ manifest: ASSET_MANIFEST });
 
   // Audio must be initialized on first user gesture (browser autoplay policy)
   const initAudio = () => {
