@@ -92,7 +92,10 @@ export class LoadingScene {
     this.container.destroy({ children: true });
 
     const { BaseGameScene } = await import('./BaseGameScene.ts');
-    const scene = new BaseGameScene(this.app);
+    const { ThemeRegistry }  = await import('../config/themes/index.ts');
+    const themeId = new URLSearchParams(location.search).get('theme') ?? 'velvet';
+    const theme   = ThemeRegistry[themeId] ?? ThemeRegistry['velvet'];
+    const scene   = new BaseGameScene(this.app, theme);
     this.app.stage.addChild(scene.container);
   }
 }
